@@ -164,7 +164,9 @@ describe("wechat copy css integration", () => {
     expect(heading).toBeTruthy();
     expect(paragraph!.style.paddingLeft).toBe("48px");
     expect(paragraph!.style.paddingRight).toBe("48px");
-    expect(heading!.style.paddingLeft).toBe("48px");
-    expect(heading!.style.paddingRight).toBe("48px");
+    expect(heading!.style.marginLeft).toBe("48px");
+    expect(heading!.style.marginRight).toBe("48px");
+    expect(heading!.style.paddingLeft).not.toBe("48px");
+    expect(heading!.style.paddingRight).not.toBe("48px");
   });
 });

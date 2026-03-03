@@ -17,3 +17,4 @@ apps/electron/release/
 # AI Agent files
 .agentdocs/
 .gemini/
+.claude/

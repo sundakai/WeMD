@@ -166,10 +166,34 @@ const mergeHorizontalPadding = (
   existingPadding: string,
   rootPadding: string,
 ): string => {
+  const normalized = existingPadding.trim().toLowerCase();
+  if (
+    normalized === "auto" ||
+    normalized === "inherit" ||
+    normalized === "initial" ||
+    normalized === "unset" ||
+    normalized === "revert" ||
+    normalized === "revert-layer"
+  ) {
+    // 这些关键字无法与长度通过 calc 相加，回退为根节点留白值。
+    return rootPadding;
+  }
   if (isZeroSpacing(existingPadding)) {
     return rootPadding;
   }
   return `calc(${existingPadding} + ${rootPadding})`;
+};
+
+const isHeadingElement = (node: HTMLElement): boolean => {
+  const tagName = node.tagName;
+  return (
+    tagName === "H1" ||
+    tagName === "H2" ||
+    tagName === "H3" ||
+    tagName === "H4" ||
+    tagName === "H5" ||
+    tagName === "H6"
+  );
 };
 
 /**
@@ -201,23 +225,44 @@ const relocateRootPaddingToInnerWrapper = (container: HTMLElement): void => {
   // 左右留白优先下沉到一级内容块，避免微信清洗外层容器 padding。
   if (hasHorizontalPadding && elementChildren.length > 0) {
     elementChildren.forEach((child) => {
+      const useMarginForHorizontalOffset = isHeadingElement(child);
       if (!isZeroSpacing(paddingLeft)) {
-        const existingPaddingLeft = child.style
-          .getPropertyValue("padding-left")
-          .trim();
-        child.style.setProperty(
-          "padding-left",
-          mergeHorizontalPadding(existingPaddingLeft, paddingLeft),
-        );
+        if (useMarginForHorizontalOffset) {
+          const existingMarginLeft = child.style
+            .getPropertyValue("margin-left")
+            .trim();
+          child.style.setProperty(
+            "margin-left",
+            mergeHorizontalPadding(existingMarginLeft, paddingLeft),
+          );
+        } else {
+          const existingPaddingLeft = child.style
+            .getPropertyValue("padding-left")
+            .trim();
+          child.style.setProperty(
+            "padding-left",
+            mergeHorizontalPadding(existingPaddingLeft, paddingLeft),
+          );
+        }
       }
       if (!isZeroSpacing(paddingRight)) {
-        const existingPaddingRight = child.style
-          .getPropertyValue("padding-right")
-          .trim();
-        child.style.setProperty(
-          "padding-right",
-          mergeHorizontalPadding(existingPaddingRight, paddingRight),
-        );
+        if (useMarginForHorizontalOffset) {
+          const existingMarginRight = child.style
+            .getPropertyValue("margin-right")
+            .trim();
+          child.style.setProperty(
+            "margin-right",
+            mergeHorizontalPadding(existingMarginRight, paddingRight),
+          );
+        } else {
+          const existingPaddingRight = child.style
+            .getPropertyValue("padding-right")
+            .trim();
+          child.style.setProperty(
+            "padding-right",
+            mergeHorizontalPadding(existingPaddingRight, paddingRight),
+          );
+        }
       }
     });
   }

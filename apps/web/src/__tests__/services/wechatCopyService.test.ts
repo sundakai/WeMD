@@ -388,6 +388,33 @@ describe("wechatCopyService clipboard strategy", () => {
     expect(blockquote.style.paddingBottom).toBe("12px");
   });
 
+  it("keeps heading inner padding and relocates root horizontal padding via margin", () => {
+    const container = document.createElement("div");
+    container.innerHTML =
+      '<section id="wemd" style="padding: 0px 16px;"><h3 style="padding-left: 8px; border-left: 4px solid rgb(0, 87, 255);"><span class="content">标题</span></h3></section>';
+
+    normalizeCopyContainer(container);
+
+    const heading = container.querySelector("h3") as HTMLElement;
+    expect(heading).toBeTruthy();
+    expect(heading.style.paddingLeft).toBe("8px");
+    expect(heading.style.marginLeft).toBe("16px");
+    expect(heading.style.marginRight).toBe("16px");
+  });
+
+  it("falls back to root padding when heading margin uses auto keyword", () => {
+    const container = document.createElement("div");
+    container.innerHTML =
+      '<section id="wemd" style="padding: 0px 16px;"><h3 style="margin-left: auto; margin-right: auto; padding-left: 8px;"><span class="content">标题</span></h3></section>';
+
+    normalizeCopyContainer(container);
+
+    const heading = container.querySelector("h3") as HTMLElement;
+    expect(heading).toBeTruthy();
+    expect(heading.style.marginLeft).toBe("16px");
+    expect(heading.style.marginRight).toBe("16px");
+  });
+
   it("normalizes figure background without overriding explicit figure background", () => {
     const container = document.createElement("div");
     container.innerHTML =
