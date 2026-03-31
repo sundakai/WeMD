@@ -43,7 +43,7 @@ const applyTableLayoutStyles = (table: HTMLTableElement): void => {
  */
 const ensureContainerScroll = (tableContainer: HTMLElement): void => {
   tableContainer.style.overflowX = "auto";
-  tableContainer.style.webkitOverflowScrolling = "touch";
+  tableContainer.style.setProperty("-webkit-overflow-scrolling", "touch");
 };
 
 /**
